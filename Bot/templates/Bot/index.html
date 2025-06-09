@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #ececec;
+      justify-content: center; /* horizontal center */
+      height: 100vh;  
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      background-color: #202123;
+      color: #fff;
+      padding: 1rem;
+      box-sizing: border-box;
+    }
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin: 1rem 0;
+    }
+    .sidebar ul li a {
+      color: #fff;
+      text-decoration: none;
+      display: block;
+      padding: 0.5rem;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+    .sidebar ul li a:hover {
+      background-color: #444654;
+    }
+    .main-content {
+      margin-left: 250px;
+      padding: 2rem;
+    }
+    .main-content h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+    .chat-box {
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .chat-wrapper {
+      display: flex;
+      justify-content: center; /*horizontal center */
+      align-items: center;     /*vertical center*/
+      height: 70vh;           /* full height of viewport */
+      /* margin-top: 13rem; */
+    }
+
+    .new-chat {
+      width: 70%;    
+      min-width: 300px;
+      text-align: center;      /* center text inside */
+      margin-top: 1rem;
+    }
+
+    .input-icon {
+      display: flex;
+      background: #f0f0f0;
+      overflow: hidden;
+      border-radius: 15px;
+      padding: 10px;
+      height: 6rem;
+    }
+
+    .prompt-input {
+      flex: 1;
+      border: none;
+      padding: 0.5rem;
+      resize: none;
+      outline: none;
+      font-size: 1rem;
+      padding-top: 2rem;  /* center placeholder and text vertically */
+    }
+
+    .send-button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+    }
+    .input-icon{
+      background-color: #ffffff;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>My Dashboard</h2>
+    <ul>
+      <li><a href="#" id="homeLink">Home</a></li>
+      <li><a href="#" id="newChatLink">New Chat</a></li>
+      <li><a href="#">Settings</a></li>
+      <li><a href="#">Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+
+    <div class="default-content">
+      <h1>Welcome!</h1>
+      <div class="chat-box">
+        <p>This is an example of dashboard content. You can display messages, chats, or any other information here.</p>
+      </div>
+      <div class="chat-box">
+        <p>You can easily expand and customize different sections.</p>
+      </div>
+    </div>
+
+    <div class="chat-wrapper">
+      <div class="new-chat">
+        <h2>How Can I Help You Today ?</h2>
+        <div class="input-icon">
+            <textarea type="text" placeholder="Ask Anything" class="prompt-input"></textarea>
+            <button type="submit" class="send-button">
+                <i class="bi bi-send" style="font-size: 1.2rem;"></i>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    const homeLink = document.getElementById('homeLink');
+    const newChatLink = document.getElementById('newChatLink');
+    const defaultContent = document.querySelector('.default-content');
+    const newChat = document.querySelector('.new-chat');
+
+    homeLink.addEventListener('click', () => {
+      defaultContent.style.display = 'block';
+      newChat.style.display = 'none';
+    });
+
+    newChatLink.addEventListener('click', () => {
+      defaultContent.style.display = 'none';
+      newChat.style.display = 'block';
+    });
+  </script>
+
+</body>
+</html>
