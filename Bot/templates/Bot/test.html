@@ -29,13 +29,32 @@
             box-sizing: border-box;
             resize: none; /* Prevent resizing */
         }
+        .submit-button{
+            width: auto;
+            height: auto;
+        }
     </style>
 </head>
 <body>
     <div class="container-one">
         <div class="container-two">
-            <textarea class="input"></textarea>
+            <textarea class="input one"></textarea>
+            <textarea class="input two"></textarea>
+            <button type="submit" class="submit-button">submit</button>
         </div>
     </div>
+    
+    <script>
+
+        const submitButton = document.querySelector(".submit-button");
+        const textarea = document.querySelector(".input");
+
+        submitButton.addEventListener("click", () => {
+            const msg = textarea.value;
+            textarea.value = '';
+            alert(msg);
+        });
+
+    </script>
 </body>
 </html>
