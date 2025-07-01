@@ -4,41 +4,32 @@ import sys
 api_key = "uH6F1TxZgwc8RKA4d9DQhoZyYy54RX61hNbxI4ky"
 co = cohere.ClientV2(api_key)
 
-def main(user_input):
+def main(user_input=None):
     if not api_key:
-        print("Error: Please Configure The API Key.")
-        sys.exit(1)
+        return("Error: Please Configure The API Key.")
 
     model_name = "command-a-03-2025"
     conversation = [{"role": "system", "content": "You are a helpful assistant."}]
 
-    print("==== cohere chatbot ====")
+    if not user_input:
+        return "Input cannot be empty."
 
-    while True:
-        try:
-            conversation.append({"role": "user", "content": user_input})
+    conversation.append({"role": "user", "content": user_input})
+    
+    response_stream = co.chat_stream(
+        model=model_name,
+        messages=conversation)
+    
+    assistant_response = ""
+
+    for chunk in response_stream:
+        if chunk.type == "content-delta":
+            token_text = chunk.delta.message.content.text
+            assistant_response += token_text
             
-            response_stream = co.chat_stream(
-                model=model_name,
-                messages=conversation)
+            print(token_text, end="", flush=True)
             
-            assistant_response = ""
-
-            for chunk in response_stream:
-                if chunk.type == "content-delta":
-                    token_text = chunk.delta.message.content.text
-                    assistant_response += token_text
-                    # print(token_text, end="", flush=True)
-
-            conversation.append({"role": "assistant", "content": assistant_response})
-
-        
-        except Exception as e:
-            print(f"\nerror : {e}\n")
-            conversation.pop()
-            continue
-        
-        return token_text
+    conversation.append({"role": "assistant", "content": assistant_response})    
 
 if __name__ == "__main__":
-    main()
+    (main("hello my name is mohammad"))

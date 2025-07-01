@@ -1,22 +1,58 @@
 from django.shortcuts import render
+from django.http import StreamingHttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import time
+import cohere
+import json
 from . import bot
 
 def index(request):
-
     return render(request, 'Bot/index.html')
 
+
+# Simulated AI response stream (replace with real API)
+def ai_stream(message):
+    api_key = "uH6F1TxZgwc8RKA4d9DQhoZyYy54RX61hNbxI4ky"
+    co = cohere.ClientV2(api_key)
+
+    if not api_key:
+        return("Error: Please Configure The API Key.")
+
+    model_name = "command-a-03-2025"
+    conversation = [{"role": "system", "content": "You are a helpful assistant."}]
+
+    if not message:
+        return "Input cannot be empty."
+
+    conversation.append({"role": "user", "content": message})
+    
+    response_stream = co.chat_stream(
+        model=model_name,
+        messages=conversation)
+    
+    assistant_response = ""
+
+    for chunk in response_stream:
+        if chunk.type == "content-delta":
+            token_text = chunk.delta.message.content.text
+            assistant_response += token_text
+            
+            yield token_text
+            # time.sleep(0.1)  # simulate delay
+            
+    conversation.append({"role": "assistant", "content": assistant_response})
+
+
+@csrf_exempt
 def input_msg(request):
-    if request.method == 'POST':
-        user_input = request.POST.get('user_input', '').strip()
-        if not user_input:
-            return render(request, 'Bot/index.html', {'error': 'Input cannot be empty.'})
+    message = request.GET.get('message', '')
 
+    def event_stream():
+        for chunk in ai_stream(message):
+            yield f"data: {chunk}\n\n"  # SSE format
 
-        # bot.main(user_input)  Call the bot's main function with user input
-        response = "API is working fine, your input was: " + user_input
-
-        if not response:
-            return render(request, 'Bot/index.html', {'error': 'No response generated.'})
-
-        return render(request, 'Bot/index.html', {'response': response})
-
+    response = StreamingHttpResponse(event_stream(), content_type='text/event-stream')
+    response['Cache-Control'] = 'no-cache'
+    response['X-Accel-Buffering'] = 'no'  # Needed for some reverse proxies like Nginx
+    return response

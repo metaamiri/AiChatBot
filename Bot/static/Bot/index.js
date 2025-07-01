@@ -57,6 +57,7 @@ function stream_chat(data){
 
 
     const userInput = document.createElement('div');
+    userInput.className = 'user-message message';
     userInput.style.border = '1px solid rgb(230, 230, 230)';
     userInput.style.borderRadius = '15px';  
     userInput.style.backgroundColor = 'rgb(230, 230, 230)';
@@ -72,6 +73,32 @@ function stream_chat(data){
     userInput.appendChild(userParag);
     streamChat.appendChild(userInput);
     streamChat.scrollTop = streamChat.scrollHeight; // scroll to bottom
+
+    const botDiv = document.createElement('div');
+    botDiv.textContent = 'Thinking...';
+    botDiv.className = 'bot-message message';
+    botDiv.style.border = '1px solid rgb(230, 230, 230)';
+    botDiv.style.borderRadius = '15px';  
+    botDiv.style.backgroundColor = 'rgb(230, 230, 230)';
+    botDiv.style.padding = '12px';
+    botDiv.style.margin = '20px';
+    botDiv.style.width = '90%';
+    botDiv.style.display = 'inline-block';
+    botDiv.style.alignSelf = 'flex-start';
+    streamChat.appendChild(botDiv);
+
+    const source = new EventSource(`/input_msg/?message=${encodeURIComponent(data)}`);
+    
+    botDiv.textContent = '';
+    
+    source.onmessage = function (event) {
+      botDiv.textContent += event.data + ' ';
+      streamChat.scrollTop = streamChat.scrollHeight;
+    };
+
+    source.onerror = function () {
+      source.close(); // Close on error or disconnect
+    };
     
 }
 
