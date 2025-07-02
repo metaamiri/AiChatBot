@@ -28,7 +28,7 @@ function newmsg() {
   const sendButton = document.querySelector('.send-button');
   const textarea = document.querySelector('.prompt-input');
 
-
+  sendButton.disabled = true;
   textarea.addEventListener('input', () => {
     sendButton.disabled = textarea.value.trim() === '';
   });
@@ -92,7 +92,33 @@ function stream_chat(data){
     botDiv.textContent = '';
     
     source.onmessage = function (event) {
-      botDiv.textContent += event.data + ' ';
+      if (event.data === '__end__') {
+
+        fetch('/save_conversation/', {
+          method: 'POST',
+          headers:{
+            'content-type':'application/json',
+          },
+          body: JSON.stringify({
+            'assistant_response': botDiv.textContent
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            alert(data.message);
+
+          } else {
+             botDiv.textContent += data.message;
+          }
+        })
+
+        source.close(); // Close the connection when done
+        return;
+      }
+
+      botDiv.textContent += event.data;
+
       streamChat.scrollTop = streamChat.scrollHeight;
     };
 
