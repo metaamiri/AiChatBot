@@ -8,7 +8,7 @@ import markdown2
 import cohere
 import json
 
-# gemini api : AIzaSyBThUM3l1cIrs4qOY9V7gWe1Vjj_SC6x24
+
 def index(request):
     return render(request, 'Bot/index.html')
 

@@ -94,6 +94,7 @@ function stream_chat(data){
     .then(response => {return response.json()})
     .then(data =>{
       html = converter.makeHtml(data.message);
+      for(chunk in h)
       botDiv.innerHTML = html;
       
       streamChat.scrollTop = streamChat.scrollHeight;
