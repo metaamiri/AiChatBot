@@ -105,7 +105,9 @@ body {
 
 .stream-chat {
   flex: 1;
+  max-height: 90vh;
   padding: 1rem;
+  padding-top : 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -118,4 +120,21 @@ body {
   padding: 1rem;
   border-top: 1px solid #ddd;
   background-color: white;
+}
+code {
+  font-family: MyFancyCustomFont, monospace;
+  font-size: inherit;
+
+}
+
+/* Code in text */
+p > code,
+li > code,
+dd > code,
+td > code {
+  background: #ffeff0;
+  word-wrap: break-word;
+  box-decoration-break: clone;
+  padding: .1rem .3rem .2rem;
+  border-radius: .2rem;
 }

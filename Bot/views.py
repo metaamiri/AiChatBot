@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from . import bot
 import time
+import markdown2
 import cohere
 import json
-from . import bot
 
+# gemini api : AIzaSyBThUM3l1cIrs4qOY9V7gWe1Vjj_SC6x24
 def index(request):
     return render(request, 'Bot/index.html')
 
@@ -33,26 +35,38 @@ def input_msg(request):
 
     # Save updated conversation back to session
     request.session['conversation'] = conversation
+    
+    api_key = "uH6F1TxZgwc8RKA4d9DQhoZyYy54RX61hNbxI4ky"
+    co = cohere.ClientV2(api_key)
+    model_name = "command-a-03-2025"
 
-    def ai_stream():
-        api_key = "uH6F1TxZgwc8RKA4d9DQhoZyYy54RX61hNbxI4ky"
-        co = cohere.ClientV2(api_key)
-        model_name = "c4ai-aya-expanse-32b"
+    response_stream = co.chat(
+        model=model_name,
+        messages=conversation
+    )
+    print(response_stream.message.content[0].text)
+    return JsonResponse({'message':response_stream.message.content[0].text, "status":"success"}, safe=False)
 
-        response_stream = co.chat_stream(
-            model=model_name,
-            messages=conversation
-        )
+    # def ai_stream():
+    #     try:
+    #         buffer = ""
+    #         converted = ""
+    #         for chunk in response_stream:
+    #             if chunk.type == "content-delta":
+    #                 token_text = chunk.delta.message.content.text
+    #                 buffer += token_text
+    #                 # converted = markdown2.markdown(buffer)  # Convert Markdown to HTML
+    #                 print(token_text, end="", flush=True)
+    #                 yield f"data: {token_text}\n\n"  # SSE format
 
-        for chunk in response_stream:
-            if chunk.type == "content-delta":
-                token_text = chunk.delta.message.content.text
-                yield f"data: {token_text}\n\n"  # SSE format
-
-        yield f"data: __end__ \n\n"
+    #     except Exception as e:
+    #         yield f"data: Error: {str(e)}\n\n"
+    #     # yield f"data: __end__ \n\n"
         
 
-    return StreamingHttpResponse(ai_stream(), content_type='text/event-stream')
+    # response = StreamingHttpResponse(ai_stream(), content_type="text/event-stream; charset=utf-8")
+    # response["Cache-Control"] = "no-cache"
+    # return response
 
 
 def save_conversation(request):

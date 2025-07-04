@@ -48,6 +48,7 @@ function newmsg() {
 
 
 function stream_chat(data){
+    
     const streamWrapper = document.querySelector(".stream-wrapper");
     const streamChat = document.querySelector(".stream-chat");
     const chatWrapper = document.querySelector('.chat-wrapper');
@@ -87,50 +88,30 @@ function stream_chat(data){
     botDiv.style.alignSelf = 'flex-start';
     streamChat.appendChild(botDiv);
 
-    const source = new EventSource(`/input_msg/?message=${encodeURIComponent(data)}`);
-    
-    botDiv.textContent = '';
-    
-    source.onmessage = function (event) {
-      if (event.data === '__end__') {
+    var converter = new showdown.Converter()
 
-        fetch('/save_conversation/', {
-          method: 'POST',
-          headers:{
-            'content-type':'application/json',
-          },
-          body: JSON.stringify({
-            'assistant_response': botDiv.textContent
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-            alert(data.message);
-
-          } else {
-             botDiv.textContent += data.message;
-          }
-        })
-
-        source.close(); // Close the connection when done
-        return;
-      }
-
-      botDiv.textContent += event.data;
-
+    fetch(`/input_msg/?message=${encodeURIComponent(data)}`)
+    .then(response => {return response.json()})
+    .then(data =>{
+      html = converter.makeHtml(data.message);
+      botDiv.innerHTML = html;
+      
       streamChat.scrollTop = streamChat.scrollHeight;
-    };
-
-    source.onerror = function () {
-      source.close(); // Close on error or disconnect
-    };
-    
+      
+      if (data.status === "success"){
+        streamChat.scrollTop = streamChat.scrollHeight;
+      }
+      hljs.highlightAll();
+    });
+  
 }
+    
+
 
 function addmsg() {
   const sendButton = document.querySelector('.send-button-addmsg');
   const textarea = document.querySelector('.prompt-input-addmsg');
+  const streamChat = document.querySelector(".stream-chat");
 
 
   textarea.addEventListener('input', () => {
@@ -147,6 +128,7 @@ function addmsg() {
       document.querySelector('.prompt-input-addmsg').value = '';
       sendButton.disabled = true;
       stream_chat(message);
+      streamChat.scrollTop = streamChat.scrollHeight;
     });
   }
 }
