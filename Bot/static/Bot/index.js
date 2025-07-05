@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWrapper.style.display = 'none';
     streamWrapper.style.display = 'none';
 
+    
+
     homeLink.addEventListener('click', () => {
         defaultContent.style.display = 'block';
         chatWrapper.style.display = 'none';
@@ -28,22 +30,41 @@ function newmsg() {
   const sendButton = document.querySelector('.send-button');
   const textarea = document.querySelector('.prompt-input');
 
+  textarea.addEventListener('keydown', function(event){
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        // Let Shift+Enter insert a newline (default behavior)
+        return;
+      }
+
+      // Prevent newline on normal Enter
+      event.preventDefault();
+
+      // Only send if input is not empty
+      if (textarea.value.trim() !== '') {
+        sendButton.click();
+      }
+    }
+  });
+
   sendButton.disabled = true;
   textarea.addEventListener('input', () => {
     sendButton.disabled = textarea.value.trim() === '';
+
+    // Prevent adding multiple listeners if already added
+    if (!sendButton.hasAttribute('listener-added')) {
+      sendButton.setAttribute('listener-added', 'true');
+
+      sendButton.addEventListener("click", () => {
+        const message = document.querySelector('.prompt-input').value;
+        document.querySelector('.prompt-input').value = '';
+        stream_chat(message);
+        addmsg();
+      });
+    }
   });
 
-  // Prevent adding multiple listeners if already added
-  if (!sendButton.hasAttribute('listener-added')) {
-    sendButton.setAttribute('listener-added', 'true');
 
-    sendButton.addEventListener("click", () => {
-      const message = document.querySelector('.prompt-input').value;
-      document.querySelector('.prompt-input').value = '';
-      stream_chat(message);
-      addmsg();
-    });
-  }
 }
 
 
@@ -94,9 +115,7 @@ function stream_chat(data){
     .then(response => {return response.json()})
     .then(data =>{
       html = converter.makeHtml(data.message);
-      for(chunk in h)
       botDiv.innerHTML = html;
-      
       streamChat.scrollTop = streamChat.scrollHeight;
       
       if (data.status === "success"){
@@ -113,6 +132,23 @@ function addmsg() {
   const sendButton = document.querySelector('.send-button-addmsg');
   const textarea = document.querySelector('.prompt-input-addmsg');
   const streamChat = document.querySelector(".stream-chat");
+
+  textarea.addEventListener('keydown', function(event){
+    if (event.key === 'Enter') {
+      if (event.shiftKey) {
+        // Let Shift+Enter insert a newline (default behavior)
+        return;
+      }
+
+      // Prevent newline on normal Enter
+      event.preventDefault();
+
+      // Only send if input is not empty
+      if (textarea.value.trim() !== '') {
+        sendButton.click();
+      }
+    }
+  });
 
 
   textarea.addEventListener('input', () => {
