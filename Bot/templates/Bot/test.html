@@ -45,30 +45,8 @@
     </div>
     
     <script>
-        const butt = document.querySelector("submit-button")
-        butt.addEventListener('click', function() {
-            fetchData();
-        });
-        function fetchData() {
-            const output = document.querySelector('.one');
-            fetch('/input_msg/?message=hello')
-            .then(response => {
-
-                return response.json();
-            })
-            .then(data => {
-                if (data.status === 'success') {
-                alert(data.message);  // 👈 show alert if status is success
-                } else {
-                console.log('Something went wrong:', data);
-                }
-                output.innerHTML = data.message; // 👈 display the message in the output element
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-            });
-        }
-
+        import {franc, francAll} from 'https://esm.sh/franc@6?bundle'
+        console.log(francAll('Considerando ser essencial que os direitos humanos'))
     </script>
 </body>
 </html>

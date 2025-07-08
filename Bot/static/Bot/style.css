@@ -101,7 +101,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 92vh; /* full viewport height */
-}
+  }
 
 .stream-chat {
   flex: 1;
@@ -112,6 +112,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.75rem; /* space between messages */
+  scroll-behavior: smooth;
 }
 
 .input-icon-addmsg {
@@ -140,6 +141,10 @@ td > code {
 }
 
 @keyframes fade-in {
-  0%   {height: 0px;}
-  100% {height: auto;}
+  from   {height: 0px;}
+  to {height: auto;}
+}
+code {
+  direction: ltr;
+  text-align: left;
 }

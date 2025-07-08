@@ -1,2 +1,2 @@
 # AiChatBot
-an AI chat Bot using coherer API
+کارگران مشغول کار و باراند ، اگر که محصول نمیده به تخمم

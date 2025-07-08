@@ -3,10 +3,12 @@ from django.http import StreamingHttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from . import bot
+from langdetect import detect
 import time
 import markdown2
 import cohere
 import json
+
 
 
 def index(request):
@@ -44,8 +46,14 @@ def input_msg(request):
         model=model_name,
         messages=conversation
     )
-    print(response_stream.message.content[0].text)
-    return JsonResponse({'message':response_stream.message.content[0].text, "status":"success"}, safe=False)
+    respond = response_stream.message.content[0].text
+    
+    if detect(respond) in ["fa","ar"]:
+        dir = "rtl"
+    else:   
+        dir = "ltr"
+        
+    return JsonResponse({'message':response_stream.message.content[0].text, "dir":dir, "status":"success"}, safe=False)
 
     # def ai_stream():
     #     try:
@@ -79,7 +87,7 @@ def save_conversation(request):
             conversation = request.session.get('conversation', [])
             conversation.append({"role": "assistant","content": assistant_response})
             request.session['conversation'] = conversation  # Ensure session is updated
-
+            print("Conversation saved:", conversation)
             return JsonResponse({'status': 'success', 'message': 'Conversation saved successfully.'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': f'Error saving conversation: {str(e)}'})

@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
 
     const homeLink = document.getElementById('homeLink');
@@ -116,10 +117,14 @@ function stream_chat(data){
     .then(data =>{
       html = converter.makeHtml(data.message);
       botDiv.innerHTML = html;
-      streamChat.scrollTop = streamChat.scrollHeight;
-      
+      botDiv.style.direction = data.dir;
+      console.log(data.dir);
+      console.log(data.message)
       if (data.status === "success"){
-        streamChat.scrollTop = streamChat.scrollHeight;
+        streamChat.scrollTo({
+          top: streamChat.scrollHeight,
+          behavior: 'smooth'
+        });
       }
       hljs.highlightAll();
     });
@@ -165,7 +170,10 @@ function addmsg() {
       document.querySelector('.prompt-input-addmsg').value = '';
       sendButton.disabled = true;
       stream_chat(message);
-      streamChat.scrollTop = streamChat.scrollHeight;
+      streamChat.scrollTo({
+          top: streamChat.scrollHeight,
+          behavior: 'smooth'
+      });
     });
   }
 }
