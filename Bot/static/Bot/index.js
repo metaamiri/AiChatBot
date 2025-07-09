@@ -17,12 +17,14 @@ document.addEventListener('DOMContentLoaded', () => {
         defaultContent.style.display = 'block';
         chatWrapper.style.display = 'none';
         streamWrapper.style.display = 'none';
+        // history.pushState(null, '', '/');
     })
 
     newChatLink.addEventListener('click', () => {
         defaultContent.style.display = 'none';
         streamWrapper.style.display = 'none';
         chatWrapper.style.display = 'flex';
+        // history.pushState(null, '', '/chat/1');
         newmsg();
     })
 });

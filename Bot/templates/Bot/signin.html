@@ -1,0 +1,50 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="{% static 'Bot/signin.css' %}">
+  <script src="{% static 'Bot/signin.js' %}" ></script>
+</head>
+<body>
+    
+
+  <div class="login-container">
+    <h2 id="login-title">Login</h2>
+    {% if message %}
+        <small class="error">{{ message }}</small>
+    {% endif %}
+    <form id="login-form">
+        {% csrf_token %}
+        <input type="text" id="login-username" placeholder="Username" required />
+        <input type="password" id="login-password" placeholder="Password" required />
+        <button type="submit" id="login-submit">Login</button>
+        <div class="link">
+            <small>Don't have an account? <a id="sign-up-anchor">Sign Up</a></small>
+        </div>
+    </form>
+  </div>
+
+  <div class="register-container">
+    <h2 id="register-title">Sign Up</h2>
+    <div class="register-form">
+        <form id="register-form">
+            {% if message %}
+                <small class="error">{{ message }}</small>
+            {% endif %}
+            {% csrf_token %}
+            <input type="text" id="register-username" placeholder="Username" required />
+            <input type="email" id="register-email" placeholder="Email" required />
+            <input type="password" id="register-password" placeholder="Password" required />
+            <input type="password" id="register-confirm-password" placeholder="Confirm Password" required />
+            <button type="submit" id="register-submit">Register</button>
+            <div class="link">
+                <small>Already Signed Up ? <a id="login-anchor">Login</a></small>
+            </div>
+        </form>
+    </div>
+  </div>
+
+</body>
+</html>

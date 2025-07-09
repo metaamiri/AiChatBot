@@ -4,6 +4,7 @@ body {
     background-color: #ececec;
     justify-content: center; /* horizontal center */
     height: 100vh;  
+    
 }
 .sidebar {
     position: fixed;
