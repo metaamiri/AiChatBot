@@ -29,7 +29,7 @@ def register(request):
         username = data.get('username', '')
         email = data.get('email', '')
         password = data.get('password', '')
-
+        print("in register func")
         # Simple validation
         if not username or not email or not password:
             return JsonResponse({'status': 'error', 'message': 'All fields are required.'})
@@ -42,19 +42,18 @@ def register(request):
                 email=email,
                 password=password
             )
+            print("User created:", user)
             user.save()
             login(request, user)  # Log the user in after registration
             request.session['user_id'] = user.id  # Store user ID in session 
 
             return JsonResponse({'status': 'success', 'message': 'Registered successful.'})
         
-        except User.IntegrityError as e:
-            if 'unique constraint' in str(e):
-                return JsonResponse({'status': 'error', 'message': 'Username or email already exists.'})
-            else:
-                return JsonResponse({'status': 'error', 'message': f'Error creating user: {str(e)}'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': f'An error occurred: {str(e)}'})
+        
+        except IntegrityError as e:
+            return JsonResponse({'status': 'error', 'message': 'Username or email already exists.'})
+        except ValueError as e:
+            return JsonResponse({'status': 'error', 'message': 'Invalid data provided.'})
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
 

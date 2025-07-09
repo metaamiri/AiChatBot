@@ -12,9 +12,8 @@
 
   <div class="login-container">
     <h2 id="login-title">Login</h2>
-    {% if message %}
-        <small class="error">{{ message }}</small>
-    {% endif %}
+    <div class="error login-error-div">
+    </div>  
     <form id="login-form">
         {% csrf_token %}
         <input type="text" id="login-username" placeholder="Username" required />
@@ -28,11 +27,10 @@
 
   <div class="register-container">
     <h2 id="register-title">Sign Up</h2>
+      <div class="error register-error-div">
+      </div>
     <div class="register-form">
-        <form id="register-form">
-            {% if message %}
-                <small class="error">{{ message }}</small>
-            {% endif %}
+        <form id="register-form">            
             {% csrf_token %}
             <input type="text" id="register-username" placeholder="Username" required />
             <input type="email" id="register-email" placeholder="Email" required />

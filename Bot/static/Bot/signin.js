@@ -5,18 +5,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const signUpAnchor = document.getElementById('sign-up-anchor');
     const registerForm = document.getElementById('register-form');
     const loginForm = document.getElementById('login-form');
+    const loginErrorDiv = document.querySelector('.login-error-div');
+    const registerErrorDiv = document.querySelector('.register-error-div');
 
     loginContainer.style.display = 'block';
     registerContainer.style.display = 'none';
 
+    
     signUpAnchor.addEventListener('click', ()=>{
         loginContainer.style.display = 'none';
         registerContainer.style.display = 'block';
+        loginErrorDiv.style.display = 'none';
     });
 
     loginAnchor.addEventListener('click', ()=>{
         loginContainer.style.display = 'block';
         registerContainer.style.display = 'none';
+        registerErrorDiv.style.display = 'none';
     });
 
     registerForm.addEventListener('submit', (event)=>{
@@ -28,13 +33,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
         const confPassword = document.getElementById('register-confirm-password').value;
 
         if(password != confPassword){
-            alert("passwords don't match.");
+            registerErrorDiv.style.display = 'block';
+            registerErrorDiv.textContent = data.message;
             return;
         }
 
         // Optional: simple validation
         if (!username || !email || !password || !confPassword ) {
-            alert('All fields are required.');
+            registerErrorDiv.style.display = 'block';
+            registerErrorDiv.textContent = "All Fields Are Requiered";
             return;
         }
 
@@ -49,26 +56,31 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }).then(response => response.json() )
             .then(data=>{
                 if (data.status === "success"){
-                     window.location.href = '/';  // or whatever page you want
+                    registerErrorDiv.style.display = 'none';
+                    window.location.href = '/';  // or whatever page you want
                 }
                 else{
-                    alert(data.message);
+                    registerErrorDiv.style.display = 'block';
+                    registerErrorDiv.textContent = data.message;
                 }
             })
 
         } catch (error) {
             console.error('Error:', error);
-            alert('Something went wrong!');
+            registerErrorDiv.style.display = 'block';
+            registerErrorDiv.textContent = "something went wrong !";
         }
     });
 
     loginForm.addEventListener('submit', (event)=>{
         event.preventDefault(); // prevent default form submit
+
         const username = document.getElementById('login-username').value.trim();
         const password = document.getElementById('login-password').value;
         
         if (!username || !password) {
-            alert('All fields are required.');
+            loginErrorDiv.style.display = 'block';
+            loginErrorDiv.textContent = "All Fields Are Requiered";
             return;
         }
 
@@ -84,16 +96,19 @@ document.addEventListener('DOMContentLoaded', ()=>{
             }).then(response => response.json() )
             .then(data=>{
                 if (data.status === "success"){
-                     window.location.href = '/';  // or whatever page you want
+                    loginErrorDiv.style.display = 'none';
+                    window.location.href = '/';  // or whatever page you want
                 }
                 else{
-                    alert(data.message);
+                    loginErrorDiv.style.display = 'block';
+                    loginErrorDiv.textContent = data.message;
                 }
             })
 
         } catch (error) {
             console.error('Error:', error);
-            alert('Something went wrong!');
+            loginErrorDiv.style.display = 'block';
+            loginErrorDiv.textContent = "Somthing Went Wrong";
         }
 
     });
