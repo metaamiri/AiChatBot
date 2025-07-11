@@ -32,23 +32,23 @@ def main():
             assistant_response = ""
 
             print("Bot:", end=" ", flush=True)
-            # for chunk in response_stream:
-            #     if chunk.type == "content-delta":
-            #         token_text = chunk.delta.message.content.text
-            #         assistant_response += token_text
-            #         print(token_text, end="", flush=True)
-
-            buffer = ""
-            token_text = ""
             for chunk in response_stream:
                 if chunk.type == "content-delta":
                     token_text = chunk.delta.message.content.text
-                    buffer += token_text
-                    converted = markdown2.markdown(buffer)  # Convert Markdown to HTML
-            print(converted, end="", flush=True)
+                    assistant_response += token_text
+                    print(token_text, end="", flush=True)
+
+            # buffer = ""
+            # token_text = ""
+            # for chunk in response_stream:
+            #     if chunk.type == "content-delta":
+            #         token_text = chunk.delta.message.content.text
+            #         buffer += token_text
+            #         converted = markdown2.markdown(buffer)  # Convert Markdown to HTML
+            # print(converted, end="", flush=True)
 
             print("\n")
-            # conversation.append({"role": "assistant", "content": assistant_response})
+            conversation.append({"role": "assistant", "content": assistant_response})
 
         except KeyboardInterrupt:
             print("\nbye!")

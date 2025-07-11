@@ -121,6 +121,10 @@ def input_msg(request):
         messages=conversation
     )
     respond = response_stream.message.content[0].text
+    conversation.append({
+        "role": "assistant",
+        "content": respond
+    })
     
     if detect(respond) in ["fa","ar"]:
         dir = "rtl"
@@ -154,17 +158,39 @@ def input_msg(request):
 def save_conversation(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        assistant_response = data.get('assistant_response', '')
-        if not assistant_response:
-            return JsonResponse({'status':'error','message': 'No conversation to save.'})
-        try:
-            conversation = request.session.get('conversation', [])
-            conversation.append({"role": "assistant","content": assistant_response})
-            request.session['conversation'] = conversation  # Ensure session is updated
-            print("Conversation saved:", conversation)
-            return JsonResponse({'status': 'success', 'message': 'Conversation saved successfully.'})
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': f'Error saving conversation: {str(e)}'})
-    
+        conversation_id = data.get('conversation_id','')
+        user_msg = data.get('user_msg','')
+        bot_msg = data.get('bot_msg','')
+        if conversation_id != "":
+            conversation = Chat.objects.get(id=conversation_id, user=request.user, title='Conversation')
+        else:
+            conversation = Chat.objects.create(user=request.user, title='Conversation1')
+
+        Chat.objects.create(chat=conversation, role='user', content=user_msg)
+        Chat.objects.create(chat=conversation, role='bot', content=bot_msg)
+
+        conversation.save()
+        print("Conversation saved successfully.")
+        return JsonResponse({'status': 'success', 'message': 'Conversation saved successfully.', 'conversation_id': conversation.id})
+        
     else:
         return JsonResponse({'status':'error','message':'Invalid request method.'})
+    
+
+@login_required
+def get_user_chats(request):
+    chats = Chat.objects.filter(user=request.user).order_by('-created_at')
+    data = [{"id": c.id, "title": c.title} for c in chats]
+    return JsonResponse(data, safe=False) 
+
+
+@login_required
+def get_chat_messages(request, chat_id):
+    try:
+        chat = Chat.objects.get(id=chat_id, user=request.user)
+    except Chat.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Chat not found'})
+
+    messages = chat.messages.order_by('created_date').values('role', 'content', 'created_date')
+    return JsonResponse(list(messages), safe=False)
+

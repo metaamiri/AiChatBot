@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     chatWrapper.style.display = 'none';
     streamWrapper.style.display = 'none';
 
-    
+    loadSidebar();
 
     homeLink.addEventListener('click', () => {
         defaultContent.style.display = 'block';
@@ -28,6 +28,25 @@ document.addEventListener('DOMContentLoaded', () => {
         newmsg();
     })
 });
+
+function loadSidebar() {
+  fetch('/get_user_chats/')
+    .then(res => res.json())
+    .then(chats => {
+      const chatList = document.querySelector('.sidebar').querySelector('.chat-list');
+      chatList.innerHTML = '';
+      chats.forEach(chat => {
+        const item = document.createElement('li');
+        item.className = 'chat-item';
+        item.textContent = chat.title;
+        item.dataset.chatId = chat.id;
+        item.style.cursor = 'pointer'; 
+        // item.addEventListener('click', () => loadChat(chat.id));
+        chatList.appendChild(item);
+      });
+    });
+}
+
 
 function newmsg() {
   const sendButton = document.querySelector('.send-button');
@@ -61,7 +80,7 @@ function newmsg() {
       sendButton.addEventListener("click", () => {
         const message = document.querySelector('.prompt-input').value;
         document.querySelector('.prompt-input').value = '';
-        stream_chat(message);
+        stream_chat(message, "first_msg");
         addmsg();
       });
     }
@@ -71,7 +90,7 @@ function newmsg() {
 }
 
 
-function stream_chat(data){
+function stream_chat(data, f=""){
     
     const streamWrapper = document.querySelector(".stream-wrapper");
     const streamChat = document.querySelector(".stream-chat");
@@ -116,18 +135,48 @@ function stream_chat(data){
 
     fetch(`/input_msg/?message=${encodeURIComponent(data)}`)
     .then(response => {return response.json()})
-    .then(data =>{
-      html = converter.makeHtml(data.message);
+    .then(result =>{
+      html = converter.makeHtml(result.message);
       botDiv.innerHTML = html;
-      botDiv.style.direction = data.dir;
-      console.log(data.dir);
-      console.log(data.message)
-      if (data.status === "success"){
-        streamChat.scrollTo({
-          top: streamChat.scrollHeight,
-          behavior: 'smooth'
-        });
+      botDiv.style.direction = result.dir;
+      
+      streamChat.scrollTo({
+        top: streamChat.scrollHeight,
+        behavior: 'smooth'
+      });
+      console.log(result.dir);
+      console.log(result.message);
+      if(result.status === "success"){
+        if (f=== "first_msg"){
+          fetch('/save_conversation/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              conversation_id: "",
+              user_msg: result.message,
+              bot_msg: data,
+            })
+          });
+
+        }
+      
+      else{
+        fetch('/save_conversation/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              conversation_id: "result.conversation_id",
+              user_msg: result.message,
+              bot_msg: data,
+            })
+          });
       }
+        
+    }
       hljs.highlightAll();
     });
   
